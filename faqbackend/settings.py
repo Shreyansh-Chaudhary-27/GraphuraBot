@@ -42,7 +42,7 @@ DEBUG = True
 
 # ALLOWED_HOSTS = ['testserver', 'localhost', '127.0.0.1']
 ALLOWED_HOSTS = [
-    'chatbot-1q9l.onrender.com',
+    'aibot-sxc2.onrender.com',
     'localhost',
     '127.0.0.1',
 ]
@@ -234,5 +234,5 @@ LOGGING = {
 }
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://chatbot-1q9l.onrender.com',
+    'https://aibot-sxc2.onrender.com',
 ]
