@@ -16,6 +16,7 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 import warnings
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -35,10 +36,10 @@ warnings.filterwarnings('ignore', message='.*deprecated-generative-ai-python.*')
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-z@r=*#4*)znd(&xd%*pbok1=1otg1coc@qy0ng2$jj0k)r9m4e'
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-z@r=*#4*)znd(&xd%*pbok1=1otg1coc@qy0ng2$jj0k)r9m4e')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
 
 # ALLOWED_HOSTS = ['testserver', 'localhost', '127.0.0.1']
 ALLOWED_HOSTS = [
@@ -66,6 +67,7 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'faqbackend.middleware.SimpleCORS',
@@ -102,10 +104,10 @@ WSGI_APPLICATION = 'faqbackend.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=f'sqlite:///{BASE_DIR / "db.sqlite3"}',
+        conn_max_age=600
+    )
 }
 
 
@@ -145,9 +147,20 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
-    BASE_DIR.parent / 'assets',
-    BASE_DIR.parent,  # allow serving root-level static like chatbot.js
+    BASE_DIR / 'faq' / 'static',
 ]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# WhiteNoise configuration
+if not DEBUG:
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
