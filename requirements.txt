@@ -97,3 +97,4 @@ whitenoise==6.9.0
 dj-database-url
 gunicorn
 psycopg2-binary
+pyspellchecker
